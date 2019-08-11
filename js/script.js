@@ -80,8 +80,6 @@ window.addEventListener('load', function() {
 		}
 	}
 
-	// firefox support - needs to be removed before exporting
-
 	svgContainer = document.getElementById("svgContainer")
 	svgContainer.style.width = "1000px";
 
@@ -128,12 +126,11 @@ window.addEventListener('load', function() {
 		ratio = width / svgWidth;
 
 		var ignored = document.getElementsByClassName("ignore");
-		for (i=0;i<ignored.length;i++)
+		for (i=ignored.length-1;i>=0;i--)
 		{
 			ignored[i].style.visibility = "";
+			ignored[i].removeAttribute('class');
 		}
-
-		stroke.remove();
 
 		placeStuff();
 
@@ -196,9 +193,9 @@ function holdingAnimation(obj, placeholder)
 
 	var scale = pos.width;
 
-	var targetX = mouseX;// - scale * 0.13;
+	var targetX = mouseX;
 	holdX = (1-holdTime) * holdX + holdTime * targetX;
-	var targetY = mouseY;// - scale * 0.54;
+	var targetY = mouseY;
 	holdY = (1-holdTime) * holdY + holdTime * targetY;
 
 	obj.style.width = pos.width + "px";
@@ -263,9 +260,6 @@ function scaleSvgContainer()
 	else
 		transformScale = scale2;
 
-
-	//console.log(transformScale,maxRatio);
-
 	svgContainer.style.transform = " scale("+transformScale.toPrecision(4)+") translate(-50%,-50%)";
 }
 
@@ -315,7 +309,7 @@ function pen(x,y)
 	newpath.setAttribute("stroke-linecap", "round");
 	newpath.setAttribute("stroke-linejoin", "round");
 
-	svg.appendChild(newpath);
+	svg.insertBefore(newpath,stroke);
 }
 
 function getColor()
@@ -371,7 +365,7 @@ function paint(x,y)
 	fillElement.setAttribute("stroke-width", 5);
 	fillElement.setAttribute("stroke-linejoin", "round");
 	fillElement.setAttribute("pointer-events", "none");
-	svg.appendChild(fillElement);
+	svg.insertBefore(fillElement,stroke);
 
 	fillPoints = [[x-2,y-2,true],[x+2,y-2,true],[x+2,y+2,true],[x-2,y+2,true]];
 
@@ -434,7 +428,7 @@ function run()
 
 				var len = Math.sqrt(dx*dx+dy*dy);
 
-				if (len > 3)//(previousStopped ? 10 : 20))
+				if (len > 5)//(previousStopped ? 10 : 20))
 				{
 					fillPoints.splice(i, 0, [(p[0]+p1[0])*0.5,(p[1]+p1[1])*0.5, true]);
 					i++;
