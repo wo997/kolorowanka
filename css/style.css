@@ -15,6 +15,10 @@ body {
 canvas {
   display: none;
 }
+.fillerAnimation {
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
 .FlexItem {
     display: flex;
     background: url(../images/svg/kolorowanka_Artboard\ 1\ copy.svg) center center no-repeat;
@@ -136,7 +140,10 @@ canvas {
   transform: translate(-43%, -86%) rotate(-60deg);
 }
 #filler.held {
-  transform: translate(-43%, -86%) rotate(-60deg);
+  transform: translate(-30%, -62%) rotate(-20deg);
+}
+#filler.down {
+  transform: translate(-37%, -72%) rotate(-60deg) !important;
 }
 .placeholder:hover + svg:not(.held) {
   transform:scale(1.1);

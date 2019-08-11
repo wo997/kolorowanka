@@ -22,7 +22,7 @@ var svgContainer;
 var holding = null, holdTime, holdX, holdY, forcePutDown;
 var pencil, pencilPlaceholder, pencilColorPath;
 var rubber, rubberPlaceholder;
-var filler, fillerPlaceholder;
+var filler, fillerPlaceholder, fillerColorPath;
 
 window.addEventListener('load', function() {
 	svg = document.getElementById("svg");
@@ -38,6 +38,10 @@ window.addEventListener('load', function() {
 
 	filler = document.getElementById('filler');
 	fillerPlaceholder = document.getElementById('fillerPlaceholder');
+	fillerColorPath = document.getElementById('fillerColorPath');
+	setFillerAnimationOpacity("0"); // should remove everything from here, useless
+
+	getColor();
 
 	stroke = document.createElement("g");
 	stroke.className = "Stroke";
@@ -312,13 +316,16 @@ function pen(x,y)
 	svg.insertBefore(newpath,stroke);
 }
 
+var COLOR = "";
 function getColor()
 {
-	var color = "white";
+	COLOR = "white";
 	if (holding != rubber)
-		color = "rgb("+Math.floor(Math.random()*190+50)+","+Math.floor(Math.random()*190+50)+","+Math.floor(Math.random()*190+50)+")";
-	pencilColorPath.style.fill = color;
-	return color;
+		COLOR = "rgb("+Math.floor(Math.random()*190+50)+","+Math.floor(Math.random()*190+50)+","+Math.floor(Math.random()*190+50)+")";
+	else return COLOR;
+	pencilColorPath.style.fill = COLOR;
+	fillerColorPath.style.fill = COLOR;
+	return COLOR;
 }
 
 function mouseMove(e)
@@ -371,12 +378,25 @@ function paint(x,y)
 
 	TTL = 35;
 
-	run();
+	//setFillerAnimationOpacity("1");
+	filler.classList.add("down");
+
+	runFill();
 }
 
-function run()
+function stopFill()
 {
-	if (TTL-- < 0) return;
+	setFillerAnimationOpacity("0");
+	filler.classList.remove("down");
+}
+
+function runFill()
+{
+	if (TTL-- < 0) // 1st exit
+	{
+		stopFill();
+		return;
+	}
 
 	for (a=0;a<3;a++)
 	{
@@ -468,7 +488,26 @@ function run()
 
 		fillElement.setAttribute("d",pathString);
 
-		if (anythingMoves && a == 2)
-			requestAnimationFrame(run);
+		if (a == 2)
+		{
+			if (anythingMoves)
+			{
+				requestAnimationFrame(runFill);
+			}
+			else // 2nd exit
+			{
+				stopFill();
+			}
+		}
+	}
+}
+
+function setFillerAnimationOpacity(val)
+{
+	var nodes = filler.getElementsByClassName("fillerAnimation");
+	for (i=0;i<nodes.length;i++)
+	{
+		nodes[i].style.opacity = val;
+		nodes[i].style.fill = COLOR;
 	}
 }
