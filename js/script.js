@@ -41,7 +41,13 @@ window.addEventListener('load', function() {
 	fillerColorPath = document.getElementById('fillerColorPath');
 	setFillerAnimationOpacity("0"); // should remove everything from here, useless
 
-	getColor();
+	var palette = document.getElementById("palette").getElementsByTagName("circle");
+	for (i=0;i<palette.length;i++)
+	{
+		palette[i].addEventListener("click",function(){
+			setColor(this.style.fill);
+		});
+	}
 
 	stroke = document.createElement("g");
 	stroke.className = "Stroke";
@@ -302,12 +308,10 @@ function pen(x,y)
 	lastY = y;
 	pathLength = 0;
 
-	color = getColor();
-
 	newpath = document.createElementNS("http://www.w3.org/2000/svg","path");
 	newpathData = "M "+lastX+" "+lastY+" L "+lastX+" "+lastY;
 	newpath.setAttribute("d",newpathData);
-	newpath.setAttribute("stroke", color);
+	newpath.setAttribute("stroke", holding == rubber ? "white" : COLOR);
 	newpath.setAttribute("fill", "none");
 	newpath.setAttribute("stroke-width", 30);
 	newpath.setAttribute("stroke-linecap", "round");
@@ -317,15 +321,11 @@ function pen(x,y)
 }
 
 var COLOR = "";
-function getColor()
+function setColor(color)
 {
-	COLOR = "white";
-	if (holding != rubber)
-		COLOR = "rgb("+Math.floor(Math.random()*190+50)+","+Math.floor(Math.random()*190+50)+","+Math.floor(Math.random()*190+50)+")";
-	else return COLOR;
+	COLOR = color;
 	pencilColorPath.style.fill = COLOR;
 	fillerColorPath.style.fill = COLOR;
-	return COLOR;
 }
 
 function mouseMove(e)
@@ -366,9 +366,8 @@ function square(x)
 function paint(x,y)
 {
 	fillElement = document.createElementNS("http://www.w3.org/2000/svg","path");
-	color = getColor();
-	fillElement.setAttribute("fill", color);
-	fillElement.setAttribute("stroke", color);
+	fillElement.setAttribute("fill", COLOR);
+	fillElement.setAttribute("stroke", COLOR);
 	fillElement.setAttribute("stroke-width", 5);
 	fillElement.setAttribute("stroke-linejoin", "round");
 	fillElement.setAttribute("pointer-events", "none");
